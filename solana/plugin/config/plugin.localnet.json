@@ -1,0 +1,16 @@
+{
+    "libpath": "/home/andrei/work/src/public/solana/plugin/target/debug/libasync_plugin.so",
+    "processor": "",
+    "owners": [
+        {
+            "name": "System Clock",
+            "address": "SysvarC1ock11111111111111111111111111111111"
+        }
+    ],
+    "accounts": [
+        {
+            "name": "Slot Hashes",
+            "address": "1111111QLbz7JHiBTspS962RLKV8GndWFwiEaqKM"
+        }
+    ]
+}
