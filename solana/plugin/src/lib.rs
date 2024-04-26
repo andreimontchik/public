@@ -16,16 +16,8 @@ pub enum AsyncPluginError {
     InvalidConfiguration { msg: String },
     #[error("({msg})")]
     InvalidPubKey { msg: String },
-    #[error("({msg})")]
-    ProcessorError { msg: String },
-    #[error("({msg})")]
-    CalculationError { msg: String },
     #[error("({code})")]
     InvalidAccountType { code: String },
-    #[error("({code})")]
-    InvalidToken { code: String },
-    #[error("({code})")]
-    InvalidLiquidityGroup { code: String },
     #[error("{err}")]
     FailedToSendMessage { err: String },
 }
@@ -68,4 +60,29 @@ pub fn to_pubkey(pubkey_str: &str) -> Result<Pubkey> {
     Pubkey::from_str(pubkey_str).map_err(|_| AsyncPluginError::InvalidPubKey {
         msg: pubkey_str.to_string(),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use {super::*, std::fs, tempfile::NamedTempFile};
+
+    #[test]
+    fn test_read_from_file() {
+        const TEST_CONTENTS: &str = "Test File Contents";
+
+        let file = NamedTempFile::new().expect("Failed to create Orca config file");
+        let file_path = file.path();
+        fs::write(file_path, TEST_CONTENTS).expect("Failed to write to the temp file!");
+
+        assert_eq!(TEST_CONTENTS, read_from_file(file_path.to_str().unwrap()));
+    }
+
+    #[test]
+    fn test_to_pubkey() {
+        for _ in 0..257 {
+            let src_pk = Pubkey::new_unique();
+            let res_pk = to_pubkey(&src_pk.to_string()).unwrap();
+            assert_eq!(src_pk, res_pk);
+        }
+    }
 }

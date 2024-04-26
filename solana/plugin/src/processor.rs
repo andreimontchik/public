@@ -3,6 +3,7 @@ pub mod noop_processor;
 use {
     crate::Message,
     log::{error, info},
+    solana_sdk::pubkey::Pubkey,
     std::{
         sync::{
             atomic::{AtomicBool, Ordering},
@@ -14,10 +15,13 @@ use {
     thiserror::Error,
 };
 
+#[allow(warnings)]
 #[derive(Error, Debug)]
 pub enum ProcessorError {
     #[error("({msg})")]
     InvalidMessageType { msg: String },
+    #[error("{}", Pubkey::from(*address).to_string())]
+    UnrecognizedAccount { address: Pubkey },
 }
 
 pub type Result<T> = std::result::Result<T, ProcessorError>;
@@ -102,5 +106,171 @@ impl ProcessorManager {
             }
         }
         info!("ProcessorManager stopped.");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use {
+        super::*,
+        solana_sdk::{pubkey::Pubkey, signature::Signature},
+    };
+    struct MockedProcessor {
+        add_account_called: bool,
+        add_owner_called: bool,
+        process_account_udpate_called: bool,
+    }
+
+    impl Processor for MockedProcessor {
+        fn new(_config: &str) -> Self
+        where
+            Self: Sized,
+        {
+            MockedProcessor {
+                add_account_called: false,
+                add_owner_called: false,
+                process_account_udpate_called: false,
+            }
+        }
+
+        fn add_owner(&mut self, _msg: &Message) -> Result<()> {
+            self.add_owner_called = true;
+            Ok(())
+        }
+
+        fn add_account(&mut self, _msg: &Message) -> Result<()> {
+            self.add_account_called = true;
+            Ok(())
+        }
+        fn update_account(&mut self, _msg: &Message) -> Result<()> {
+            self.process_account_udpate_called = true;
+            Ok(())
+        }
+    }
+
+    struct MockedFaultyProcessor {}
+
+    impl Processor for MockedFaultyProcessor {
+        fn new(_config: &str) -> Self
+        where
+            Self: Sized,
+        {
+            Self {}
+        }
+
+        fn add_owner(&mut self, _msg: &Message) -> Result<()> {
+            Err(ProcessorError::UnrecognizedAccount {
+                address: Pubkey::new_unique(),
+            })
+        }
+        fn add_account(&mut self, _msg: &Message) -> Result<()> {
+            Err(ProcessorError::UnrecognizedAccount {
+                address: Pubkey::new_unique(),
+            })
+        }
+        fn update_account(&mut self, _msg: &Message) -> Result<()> {
+            Err(ProcessorError::UnrecognizedAccount {
+                address: Pubkey::new_unique(),
+            })
+        }
+    }
+
+    #[test]
+    fn test_process() {
+        let mut processor = MockedProcessor::new("");
+        assert!(!processor.add_owner_called);
+        assert!(!processor.add_account_called);
+        assert!(!processor.process_account_udpate_called);
+
+        // Add owner
+        assert!(processor
+            .add_owner(&Message::OwnerInfo {
+                name: "Dummy owner".to_string(),
+                address: Pubkey::new_unique()
+            })
+            .is_ok());
+        assert!(processor.add_owner_called);
+        assert!(!processor.add_account_called);
+        assert!(!processor.process_account_udpate_called);
+
+        // Add account
+        processor.add_owner_called = false;
+        assert!(processor
+            .add_account(&Message::AccountInfo {
+                name: "Dummy account".to_string(),
+                address: Pubkey::new_unique()
+            })
+            .is_ok());
+        assert!(!processor.add_owner_called);
+        assert!(processor.add_account_called);
+        assert!(!processor.process_account_udpate_called);
+
+        // Process account update
+        processor.add_account_called = false;
+        assert!(processor
+            .update_account(&Message::AccountUpdate {
+                slot: 1,
+                address: Pubkey::new_unique(),
+                data: Vec::<u8>::new(),
+                txn_signature: Some(Signature::new_unique()),
+            })
+            .is_ok());
+        assert!(!processor.add_owner_called);
+        assert!(!processor.add_account_called);
+        assert!(processor.process_account_udpate_called);
+    }
+
+    #[test]
+    fn test_failed_add_owner() {
+        let msg = &&Message::AccountInfo {
+            name: "Dummy owner".to_string(),
+            address: Pubkey::new_unique(),
+        };
+
+        let mut processor = MockedFaultyProcessor {};
+        match processor.process(msg) {
+            Ok(_) => panic!("Unexpected processing result!"),
+            Err(err) => match err {
+                ProcessorError::UnrecognizedAccount { address: _ } => (), // Expected
+                _ => panic!("Unexpected error {}!", err),
+            },
+        }
+    }
+
+    #[test]
+    fn test_failed_add_account() {
+        let msg = &&Message::AccountInfo {
+            name: "Dummy account".to_string(),
+            address: Pubkey::new_unique(),
+        };
+
+        let mut processor = MockedFaultyProcessor {};
+        match processor.process(msg) {
+            Ok(_) => panic!("Unexpected processing result!"),
+            Err(err) => match err {
+                ProcessorError::UnrecognizedAccount { address: _ } => (), // Expected
+                _ => panic!("Unexpected error {}!", err),
+            },
+        }
+    }
+
+    #[test]
+    fn test_failed_account_update() {
+        let address = Pubkey::new_unique();
+        let msg = Message::AccountUpdate {
+            slot: 1,
+            address,
+            data: Vec::<u8>::new(),
+            txn_signature: Some(Signature::new_unique()),
+        };
+
+        let mut processor = MockedFaultyProcessor {};
+        match processor.process(&msg) {
+            Ok(_) => panic!("Unexpected processing result!"),
+            Err(err) => match err {
+                ProcessorError::UnrecognizedAccount { address: _ } => (), // Expected
+                _ => panic!("Unexpected error {}!", err),
+            },
+        }
     }
 }

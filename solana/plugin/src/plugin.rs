@@ -27,8 +27,8 @@ impl From<AsyncPluginError> for GeyserPluginError {
 #[derive(Error, Debug, Deserialize)]
 pub struct PluginConfig {
     pub processor: String,
-    pub owners: Vec<String>,
-    pub accounts: Vec<String>,
+    pub owners: Vec<AccountConfig>,
+    pub accounts: Vec<AccountConfig>,
 }
 
 impl PluginConfig {
@@ -41,6 +41,12 @@ impl fmt::Display for PluginConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:?}", self)
     }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AccountConfig {
+    name: String,
+    address: String,
 }
 
 #[derive(Debug)]
@@ -92,19 +98,11 @@ impl AsyncPlugin {
 
 impl GeyserPlugin for AsyncPlugin {
     fn name(&self) -> &'static str {
-        "Plugin"
+        "AsyncPlugin"
     }
 
     fn account_data_notifications_enabled(&self) -> bool {
         true
-    }
-
-    fn transaction_notifications_enabled(&self) -> bool {
-        false
-    }
-
-    fn entry_notifications_enabled(&self) -> bool {
-        false
     }
 
     fn on_load(&mut self, config_file: &str) -> Result<()> {
@@ -117,20 +115,20 @@ impl GeyserPlugin for AsyncPlugin {
 
         // Register owners
         for owner in config.owners {
-            let address = to_pubkey(&owner)?;
+            let address = to_pubkey(&owner.address)?;
             self.message_filter.add_owner(&address);
             self.send_message(Message::OwnerInfo {
-                name: "Test".to_string(),
+                name: owner.name,
                 address,
             })?;
         }
 
         // Register accounts
         for account in config.accounts {
-            let address = to_pubkey(&account)?;
+            let address = to_pubkey(&account.address)?;
             self.message_filter.add_account(&address);
             self.send_message(Message::AccountInfo {
-                name: "Test".to_string(),
+                name: account.name,
                 address,
             })?;
         }
@@ -164,4 +162,47 @@ impl GeyserPlugin for AsyncPlugin {
 /// This function returns the GeyserPluginPostgres pointer as trait GeyserPlugin.
 pub unsafe extern "C" fn _create_plugin() -> *mut dyn GeyserPlugin {
     Box::into_raw(Box::new(AsyncPlugin::new()))
+}
+
+#[cfg(test)]
+mod tests {
+    use {super::*, std::fs, tempfile::NamedTempFile};
+
+    #[test]
+    fn test_plugin_config() {
+        const PROCESSOR_CFG: &str = "Processor configuration";
+        const OWNER_NAME: &str = "Owner Name";
+        let owner_address = Pubkey::new_unique().to_string();
+        const ACCOUNT_NAME: &str = "Account Name";
+        let account_address = Pubkey::new_unique().to_string();
+        let config_str = format!(
+            r#"
+        {{
+            "libpath": "Dummy path",
+            "processor":"{}",
+            "owners": [{{
+                "name": "{}",
+                "address": "{}"
+            }}],
+            "accounts": [{{
+                "name": "{}",
+                "address": "{}"
+            }}]
+    }}"#,
+            PROCESSOR_CFG, OWNER_NAME, owner_address, ACCOUNT_NAME, account_address
+        );
+
+        let file = NamedTempFile::new().unwrap();
+        let file_path = file.path();
+        fs::write(file_path, config_str).unwrap();
+
+        let config = PluginConfig::load(file_path.to_str().unwrap());
+        assert_eq!(config.processor, PROCESSOR_CFG);
+        assert_eq!(config.owners.len(), 1);
+        assert_eq!(config.owners[0].name, OWNER_NAME);
+        assert_eq!(config.owners[0].address, owner_address);
+        assert_eq!(config.accounts.len(), 1);
+        assert_eq!(config.accounts[0].name, ACCOUNT_NAME);
+        assert_eq!(config.accounts[0].address, account_address);
+    }
 }
