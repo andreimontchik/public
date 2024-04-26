@@ -1,0 +1,1 @@
+Reference Implementation of the [Solana Geyser Plugin](https://github.com/anza-xyz/agave/tree/master/geyser-plugin-interface) for asyncronous processing of the plugin's callbacks.
