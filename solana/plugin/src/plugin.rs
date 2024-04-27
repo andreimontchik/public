@@ -73,15 +73,16 @@ impl AsyncPlugin {
     }
 
     fn handle_account_update(&self, slot: Slot, msg: &ReplicaAccountInfoV3) -> crate::Result<()> {
+        debug!(
+            "Handling account update. Slot: {}, Owner: {:?}, Address: {:?}",
+            slot,
+            Pubkey::try_from(msg.owner),
+            Pubkey::try_from(msg.pubkey)
+        );
+
         if !self.message_filter.is_registered(msg.owner, msg.pubkey) {
             return Ok(());
         }
-
-        debug!(
-            "Handling account update. Slot: {}, Address: {:?}",
-            slot,
-            Pubkey::try_from(msg.pubkey)
-        );
 
         let address = Pubkey::try_from(msg.pubkey).map_err(|_| AsyncPluginError::InvalidPubKey {
             msg: format!("{:?}", msg),
@@ -156,7 +157,6 @@ impl GeyserPlugin for AsyncPlugin {
 
 #[no_mangle]
 #[allow(improper_ctypes_definitions)]
-
 /// # Safety
 ///
 /// This function returns the GeyserPluginPostgres pointer as trait GeyserPlugin.

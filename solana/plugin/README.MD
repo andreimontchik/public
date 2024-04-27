@@ -3,11 +3,15 @@ Reference Implementation of the [Solana Geyser Plugin](https://github.com/anza-x
 It registers callbacks that are sending messages to a single queue that is being drained by a sole reader called Procesor. This approach makes message processing thread safe and also decouples it from the Validator API, which make Processors re-usable by other than the Solana Validator application and simplifies it's testing.
 
 Reference instructions how to build and run it.
+### Solana CLI
+1. [Set up Solana dev environment](https://solana.com/developers/guides/getstarted/setup-local-development)
+1. Confirm 
+
 ### Obtain the source code
 1. `mkdir -p ~/work/src/`
 1. `cd ~/work/src`
-1. `git pull git@github.com:andreimontchik/public.git`
-1. `cd solana/plugin`
+1. `git clone git@github.com:andreimontchik/public.git`
+1. `cd public/solana/plugin`
 
 ### Build 
 `cargo build`

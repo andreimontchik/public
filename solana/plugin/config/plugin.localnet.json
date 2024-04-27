@@ -3,14 +3,14 @@
     "processor": "",
     "owners": [
         {
-            "name": "System Clock",
-            "address": "SysvarC1ock11111111111111111111111111111111"
+            "name": "Vote Program",
+            "address": "Vote111111111111111111111111111111111111111"
         }
     ],
     "accounts": [
         {
-            "name": "Slot Hashes",
-            "address": "1111111QLbz7JHiBTspS962RLKV8GndWFwiEaqKM"
+            "name": "System Clock",
+            "address": "SysvarC1ock11111111111111111111111111111111"
         }
     ]
 }
