@@ -1,2 +1,2 @@
-### A collection of applications and reference documentation materials. Free of charge. Please enjoy responsibly. :-)
-* [Asyncronus implementation of the Solana Geyser Plugin.](solana/plugin)
+### A collection of applications and reference documentation materials. Free of charge, please enjoy responsibly. :-)
+* [Asyncronus implementation of the Solana Geyser Plugin](solana/plugin)
