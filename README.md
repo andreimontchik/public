@@ -3,4 +3,4 @@
 * [Asyncronus implementation of the Solana Geyser Plugin](solana/plugin)
 
 ### Docs
-* [Linux](wiki/linux)
+* [Linux](https://github.com/andreimontchik/public/wiki/linux)
