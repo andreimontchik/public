@@ -2,5 +2,5 @@
 ### Apps
 * [Asyncronus implementation of the Solana Geyser Plugin](solana/plugin)
 
-### Docs
+### Reference Docs
 * [Linux](https://github.com/andreimontchik/public/wiki/linux)
