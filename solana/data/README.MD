@@ -1,1 +1,1 @@
-Various data collected from the Solana ledger grouped by Epoch.
+Various data collected from the Solana Mainnet grouped by Epoch.
