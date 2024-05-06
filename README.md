@@ -6,4 +6,4 @@
 * [Price discrepancies between liquidity pools on the Solana blockchain](solana/data)
 
 ### Reference Docs
-* [Linux](wiki/linux)
+* [Linux](https://github.com/andreimontchik/public/wiki/linux)
