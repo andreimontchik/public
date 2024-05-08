@@ -3,3 +3,5 @@ target/
 .vscode/
 
 Cargo.lock
+
+programs/scripts/*.js

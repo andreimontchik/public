@@ -3,7 +3,10 @@ resolver = "2"
 
 members = [
     "ping",
+    "fail_on_division",
 ]
 
 [workspace.dependencies]
 solana-program = "=1.17.31"
+borsh = "^0.10"
+borsh-derive = "^0.10"
