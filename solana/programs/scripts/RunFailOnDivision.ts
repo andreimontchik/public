@@ -37,6 +37,17 @@ const payloadSchema = new Map([
 
 async function main() {
 
+    if (process.argv.length !== 4) {
+        console.error('Required two numeric input parameters `Dividend` and `Remainder`!');
+        process.exit(1);
+    }
+
+    const dividend: number = parseInt(process.argv[2], 10);
+    const remainder: number = parseInt(process.argv[3], 10);
+
+    console.log('Dividend:', dividend);
+    console.log('Remainder:', remainder);
+
     const CONNECTION_URL = "http://localhost:8899";
 
     const PAYER_KEYPAIR_FILE = "/home/andrei/work/src/public/solana/programs/keypairs/payer.json";
@@ -53,33 +64,39 @@ async function main() {
 
     const connection = new web3.Connection(CONNECTION_URL);
 
-    const transaction = new web3.Transaction({
-        feePayer: payerKeyPair.publicKey,
-    });
-
     let keys = [{ pubkey: payerKeyPair.publicKey, isSigner: true, isWritable: true }];
 
-    const payload = new Payload({
-        dividend: 7,
-        divisor: 3,
-        remainder: 2,
-    });
-    const payloadBuffer = Buffer.from(serialize(payloadSchema, payload));
+    for (let i = 1; i <= dividend; i++) {
+        const transaction = new web3.Transaction({
+            feePayer: payerKeyPair.publicKey,
+        });
 
-    transaction.add(
-        new web3.TransactionInstruction({
-            keys: keys,
-            programId: programKeyPair.publicKey,
-            data: payloadBuffer,
-        }),
-    );
+        const payload = new Payload({
+            dividend,
+            divisor: i,
+            remainder,
+        });
+        const payloadBuffer = Buffer.from(serialize(payloadSchema, payload));
 
-    console.log("Sending transaction...");
-    const txHash = await web3.sendAndConfirmTransaction(
-        connection,
-        transaction,
-        [payerKeyPair],
-    );
-    console.log("Transaction Confirmed. Signature:", txHash);
+        transaction.add(
+            new web3.TransactionInstruction({
+                keys: keys,
+                programId: programKeyPair.publicKey,
+                data: payloadBuffer,
+            }),
+        );
+
+        try {
+            console.log("Sending transaction with Payload: ", payload);
+            const txHash = await web3.sendAndConfirmTransaction(
+                connection,
+                transaction,
+                [payerKeyPair],
+            );
+            console.log(`Transaction is confirmed. Signature:`, txHash);
+        } catch (error) {
+            console.error(`Transaction is failed. Error: `, error.message);
+        }
+    }
 }
 main();
