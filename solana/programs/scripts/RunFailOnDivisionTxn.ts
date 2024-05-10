@@ -1,5 +1,5 @@
-import { ComputeBudgetProgram, Keypair } from "@solana/web3.js";
-import * as fs from 'fs';
+import { ComputeBudgetProgram } from "@solana/web3.js";
+import { loadKeyPair } from "./Common";
 import { serialize } from "borsh";
 import { Buffer } from "buffer";
 
@@ -55,22 +55,15 @@ async function main() {
 
     const CONNECTION_URL = "http://localhost:8899";
 
-    const PAYER_KEYPAIR_FILE = "/home/andrei/work/src/public/solana/programs/keypairs/payer.json";
-    const payerSecret = JSON.parse(fs.readFileSync(PAYER_KEYPAIR_FILE).toString()) as number[];
-    const payerSecretKey = Uint8Array.from(payerSecret);
-    const payerKeyPair = Keypair.fromSecretKey(payerSecretKey);
+    const payerKeyPair = loadKeyPair("/home/andrei/work/src/public/solana/programs/keypairs/payer.json");
     console.log("Payer: ", payerKeyPair.publicKey);
 
-    const PROGRAM_KEYPAIR_FILE = "/home/andrei/work/src/public/solana/programs/keypairs/fail-on-division.json";
-    const programSecret = JSON.parse(fs.readFileSync(PROGRAM_KEYPAIR_FILE).toString()) as number[];
-    const programSecretKey = Uint8Array.from(programSecret);
-    const programKeyPair = Keypair.fromSecretKey(programSecretKey);
+    const programKeyPair = loadKeyPair("/home/andrei/work/src/public/solana/programs/keypairs/fail-on-division.json");
     console.log("Program: ", programKeyPair.publicKey);
 
     const connection = new web3.Connection(CONNECTION_URL);
 
     let keys = [{ pubkey: payerKeyPair.publicKey, isSigner: true, isWritable: true }];
-
 
     for (let i = 1; i <= dividend; i++) {
 
