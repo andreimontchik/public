@@ -1,39 +1,9 @@
 import { ComputeBudgetProgram } from "@solana/web3.js";
-import { loadKeyPair } from "./Common";
+import { FailOnDivisionPayload, failOnDivisionPayloadSchema, loadKeyPair } from "./Common";
 import { serialize } from "borsh";
 import { Buffer } from "buffer";
 
 const web3 = require("@solana/web3.js");
-
-// Flexible class that takes properties and imbues them to the object instance
-class Assignable {
-    constructor(properties) {
-        Object.keys(properties).map((key) => {
-            return (this[key] = properties[key]);
-        });
-    }
-}
-
-class Payload extends Assignable {
-    dividend: number;
-    divisor: number;
-    remainder: number;
-}
-
-// Borsh needs a schema describing the payload
-const payloadSchema = new Map([
-    [
-        Payload,
-        {
-            kind: "struct",
-            fields: [
-                ["dividend", "u8"],
-                ["divisor", "u8"],
-                ["remainder", "u8"],
-            ],
-        },
-    ],
-]);
 
 async function main() {
 
@@ -87,12 +57,12 @@ async function main() {
         // Add instructions
         for (let j = 0; j < numOfInstructions; j++) {
 
-            const payload = new Payload({
+            const payload = new FailOnDivisionPayload({
                 dividend,
                 divisor: i + j,
                 remainder,
             });
-            const payloadBuffer = Buffer.from(serialize(payloadSchema, payload));
+            const payloadBuffer = Buffer.from(serialize(failOnDivisionPayloadSchema, payload));
             const transactionInstruction = new web3.TransactionInstruction({
                 keys: keys,
                 programId: programKeyPair.publicKey,
