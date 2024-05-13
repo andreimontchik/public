@@ -3,7 +3,8 @@ resolver = "2"
 
 members = [
     "ping",
-    "fail_on_division",
+    "ping_cpi",
+    "fail_on_division",    
 ]
 
 [workspace.dependencies]

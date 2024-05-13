@@ -18,11 +18,9 @@ async function main() {
         feePayer: payerKeyPair.publicKey,
     });
 
-    let keys = [{ pubkey: payerKeyPair.publicKey, isSigner: true, isWritable: true }];
-
     transaction.add(
         new web3.TransactionInstruction({
-            keys: keys,
+            keys: [],
             programId: programKeyPair.publicKey,
         }),
     );
