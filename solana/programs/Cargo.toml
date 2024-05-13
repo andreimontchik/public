@@ -2,9 +2,11 @@
 resolver = "2"
 
 members = [
+    "common",
     "ping",
     "ping_cpi",
     "fail_on_division",    
+    "fail_on_division_cpi",    
 ]
 
 [workspace.dependencies]

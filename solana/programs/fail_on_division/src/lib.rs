@@ -1,10 +1,12 @@
 use {
-    borsh::{BorshDeserialize, BorshSerialize},
+    borsh::BorshDeserialize,
+    common::FailOnDivisionPayload,
     solana_program::{
         account_info::AccountInfo, entrypoint::ProgramResult, msg, program_error::ProgramError,
         pubkey::Pubkey,
     },
 };
+
 // declare and export the program's entrypoint
 solana_program::entrypoint!(process_instruction);
 
@@ -14,9 +16,9 @@ pub fn process_instruction(
     _accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
-    msg!("FailOnDivision is called.");
+    msg!("Called FailOnDivision.");
 
-    let payload = Payload::try_from_slice(instruction_data)?;
+    let payload = FailOnDivisionPayload::try_from_slice(instruction_data)?;
     msg!("FailOnDivision payload: {:?}", payload);
     let remainder = payload.dividend % payload.divisor;
     if remainder != payload.remainder {
@@ -33,11 +35,4 @@ pub fn process_instruction(
         );
         Err(ProgramError::Custom(remainder as u32))
     }
-}
-
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
-pub struct Payload {
-    dividend: u8,
-    divisor: u8,
-    remainder: u8,
 }

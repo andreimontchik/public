@@ -1,5 +1,5 @@
 [package]
-name = "fail_on_division"
+name = "fail_on_division_cpi"
 version = "0.1.0"
 edition = "2021"
 

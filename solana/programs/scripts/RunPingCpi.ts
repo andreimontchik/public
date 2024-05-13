@@ -23,8 +23,6 @@ async function main() {
 
     let keys = [
         { pubkey: pingKeyPair.publicKey, isSigner: false, isWritable: false },
-        { pubkey: pingCpiKeyPair.publicKey, isSigner: false, isWritable: false },
-        { pubkey: payerKeyPair.publicKey, isSigner: true, isWritable: true }
     ];
 
     instruction.add(
