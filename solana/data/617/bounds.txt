@@ -1,0 +1,4 @@
+Ledger has data for 432642 slots 266537851 to 266976024
+  with 424923 rooted slots from 266537851 to 266975968
+  and 40 slots past the last root
+

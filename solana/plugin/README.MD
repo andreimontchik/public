@@ -13,6 +13,6 @@ The Validator's multithreaded callback methods are sending messages to a channel
 1. Build the plugin: `cargo build`
 1. Create the plugin config. Use [plugin.localnet.json](config/plugin.localnet.json) as reference. 
 1. Run on the Localnet:
-   1. `mkdir -p ~/work/playground`
-   1. `cd ~/work/playground`
+   1. `mkdir -p ~/work`
+   1. `cd ~/work`
    1. `export RUST_LOG=solana=info,async_plugin=info; rm -f test-ledger/validator.log;  solana-test-validator --geyser-plugin-config ~/work/src/public/solana/plugin/config/plugin.localnet.json`
