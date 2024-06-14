@@ -1,7 +1,7 @@
 use {
     crate::{
         message_filter::MessageFilter,
-        processor::{noop_processor::NoopProcessor, ProcessorManager},
+        processor::{cpi_processor::CpiProcessor, noop_processor::NoopProcessor, ProcessorManager},
         read_from_file, to_pubkey, AsyncPluginError, Message,
     },
     log::{debug, info},
@@ -112,7 +112,7 @@ impl GeyserPlugin for AsyncPlugin {
         info!("Loading the Plugin configuration from '{}'.", config_file);
         let config = PluginConfig::load(config_file);
 
-        self.processor_manager.start::<NoopProcessor>(config.processor);
+        self.processor_manager.start::<CpiProcessor>(config.processor);
 
         // Register owners
         for owner in config.owners {

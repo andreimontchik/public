@@ -1,3 +1,4 @@
+pub mod cpi_processor;
 pub mod noop_processor;
 
 use {
