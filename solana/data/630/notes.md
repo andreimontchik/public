@@ -16,7 +16,7 @@ __LPs__
 
 ```
       "min_base_token_balance": 0.01
-      "min_base_token_balance": 10.0
+      "min_quote_token_balance": 10.0
 ```
 
 ## Stats
