@@ -187,6 +187,23 @@ arb.2024-07-14T154819 - 255 rows total.
 |6|6|71.6902|
 |7|1|17.3941|
 
+## Decreased the Arbmin_quote_margin and base_token_balance. Raydium only.
+```
+"min_quote_margin": 0.3,
+```
+arb.2024-07-14T160324 - 288 rows total. Number of arbs is a bit greater, but the total margin is not much better.
+
+| Min SOL | Qty Arbs | Quote Token Margin |
+|---------|--------|--------------------|
+||104|383.881|
+|2|48|247.775|
+|3|30|138.45|
+|4|7|77.6675|
+|5|6|71.6902|
+|6|6|71.6902|
+|7|1|17.3941|
+
+
 
 
 
