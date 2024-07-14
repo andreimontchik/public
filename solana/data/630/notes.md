@@ -208,6 +208,10 @@ arb.2024-07-14T160324 - 288 rows total. Number of arbs is a bit greater, but the
 ```
 "min_quote_margin": 0.5,
 ```
+```
+"min_base_token_balance": 0.5,
+"min_quote_token_balance": 75.0,
+```
 
 arb.2024-07-14T165542 - 110 rows total.
 
