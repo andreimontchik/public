@@ -114,7 +114,7 @@ arb.2024-06-26T210702 - 161 rows total. Almost same as with the 0.5 and 0.2 min_
 ```
 
 ### Stats for Raydium only
-arb.2024-07-14T143853 - 141 rows total
+arb.2024-07-14T143853 - 141 rows total.
 
 | Min SOL | Qty Arbs | Quote Token Margin |
 |---------|--------|--------------------|
@@ -127,6 +127,33 @@ arb.2024-07-14T143853 - 141 rows total
 ```
 "min_base_token_balance": 1,
 "min_quote_token_balance": 150,
+```
+
+### Stats for Raydium only
+arb.2024-07-14T151409 - 203 rows total.
+
+| Min SOL | Qty Arbs | Quote Token Margin |
+|---------|--------|--------------------|
+||72|313.462|
+|2|25|154.473|
+|3|21|92.3637|
+
+## Updated Token Funding 
+```
+  "token_funding": [
+    {
+      "code": "wSOL",
+      "amount": 10.0
+    },
+    {
+      "code": "USDC",
+      "amount": 1000.0
+    },
+    {
+      "code": "USDT",
+      "amount": 1000.0
+    }
+  ],
 ```
 
 ### Stats for Raydium only
