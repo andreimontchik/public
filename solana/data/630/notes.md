@@ -13,14 +13,12 @@ __LPs__
 "min_quote_margin": 1,
 
 ```
-
 ```
-      "min_base_token_balance": 0.01
-      "min_quote_token_balance": 10.0
+"min_base_token_balance": 0.01
+"min_quote_token_balance": 10.0
 ```
 
 ## Stats
-
 ### All LPs
 arb.2024-06-26T165644 - 5385 rows total.
 
@@ -68,7 +66,9 @@ arb.2024-06-26T193737 - 5 rows total.
 
 ## Arb config
 ```
-      "min_base_token_balance": 0.5, <- increased from 0.01
+"min_base_token_balance": 0.5, <- increased from 0.01
+"min_quote_token_balance": 10.0
+"min_quote_margin": 1,
 ```
 
 ## Stats for Raydium only
@@ -82,7 +82,9 @@ arb.2024-06-26T203216 - 139 rows total.
 
 ## Arb config
 ```
-      "min_base_token_balance": 0.2, <- decreased from 0.5
+"min_base_token_balance": 0.5, <- increased from 0.01
+"min_quote_token_balance": 10.0
+"min_quote_margin": 1,
 ```
 
 ## Stats for Raydium only
@@ -95,7 +97,9 @@ arb.2024-06-26T205023 - 143 rows total. Almost same as with the 0.5 min_base_tok
 
 ## Arb config
 ```
-      "min_base_token_balance": 0.1, <- decreased from 0.2
+"min_base_token_balance": 0.5, <- increased from 0.01
+"min_quote_token_balance": 10.0
+"min_quote_margin": 1,
 ```
 
 ## Stats for Raydium only
@@ -111,6 +115,7 @@ arb.2024-06-26T210702 - 161 rows total. Almost same as with the 0.5 and 0.2 min_
 ```
 "min_base_token_balance": 0.5,
 "min_quote_token_balance": 300,
+"min_quote_margin": 1,
 ```
 
 ### Stats for Raydium only
@@ -127,6 +132,7 @@ arb.2024-07-14T143853 - 141 rows total.
 ```
 "min_base_token_balance": 1,
 "min_quote_token_balance": 150,
+"min_quote_margin": 1,
 ```
 
 ### Stats for Raydium only
@@ -171,8 +177,7 @@ arb.2024-07-14T152952 - 203 rows total, same as before increasing token funding.
 ## Decreased the Arbmin_quote_margin and base_token_balance. Raydium only.
 ```
 "min_base_token_balance": 0.5,
-```
-```
+"min_quote_token_balance": 300,
 "min_quote_margin": 0.5,
 ```
 arb.2024-07-14T154819 - 255 rows total.
@@ -189,6 +194,8 @@ arb.2024-07-14T154819 - 255 rows total.
 
 ## Decreased the Arbmin_quote_margin and base_token_balance. Raydium only.
 ```
+"min_base_token_balance": 0.5,
+"min_quote_token_balance": 300,
 "min_quote_margin": 0.3,
 ```
 arb.2024-07-14T160324 - 288 rows total. Number of arbs is a bit greater, but the total margin is not much better.
@@ -206,11 +213,9 @@ arb.2024-07-14T160324 - 288 rows total. Number of arbs is a bit greater, but the
 
 ## Arb config update. Raydium only.
 ```
-"min_quote_margin": 0.5,
-```
-```
 "min_base_token_balance": 0.5,
 "min_quote_token_balance": 75.0,
+"min_quote_margin": 0.5,
 ```
 
 arb.2024-07-14T165542 - 110 rows total.
@@ -230,6 +235,7 @@ arb.2024-07-14T165542 - 110 rows total.
 ```
 "min_base_token_balance": 1,
 "min_quote_token_balance": 150,
+"min_quote_margin": 0.5,
 ```
 arb.2024-07-14T172423 - 255 rows total.
 | Min SOL | Qty Arbs | Quote Token Margin |
@@ -244,6 +250,8 @@ arb.2024-07-14T172423 - 255 rows total.
 
 ## Arb config update. Raydium only.
 ```
+"min_base_token_balance": 1,
+"min_quote_token_balance": 150,
 "min_quote_margin": 1,
 ```
 arb.2024-07-14T180244 - 203 rows total.
@@ -257,5 +265,10 @@ arb.2024-07-14T180244 - 203 rows total.
 |6|5|70.8471|
 |7|1|17.3941|
 
-
-
+## Arb config update. Raydium only.
+```
+"min_base_token_balance": 1,
+"min_quote_token_balance": 150,
+"min_quote_margin": 0.3,
+```
+arb.2024-07-14T181857 - 
