@@ -138,7 +138,7 @@ arb.2024-07-14T151409 - 203 rows total.
 |2|25|154.473|
 |3|21|92.3637|
 
-## Updated Token Funding 
+## Increased Token Funding, Raydium only
 ```
   "token_funding": [
     {
@@ -156,7 +156,16 @@ arb.2024-07-14T151409 - 203 rows total.
   ],
 ```
 
-### Stats for Raydium only
+arb.2024-07-14T152952 - 203 rows total, same as before increasing token funding. Increased quote margin.
+| Min SOL | Qty Arbs | Quote Token Margin |
+|---------|--------|--------------------|
+||72|353.474|
+|2|25|194.485|
+|3|21|132.376|
+|4|5|70.8471|
+|5|5|70.8471|
+|6|5|70.8471|
+|7|1|17.3941|
 
 
 
