@@ -204,9 +204,23 @@ arb.2024-07-14T160324 - 288 rows total. Number of arbs is a bit greater, but the
 |7|1|17.3941|
 
 
+## Arb config update. Raydium only.
+```
+"min_quote_margin": 0.5,
+```
 
+arb.2024-07-14T165542 - 110 rows total.
 
-
+| Min SOL | Qty Arbs | Quote Token Margin |
+|---------|--------|--------------------|
+||43|273.044|
+|1|40|269.392|
+|2|40|269.392|
+|3|7|78.5503|
+|4|7|78.5503|
+|5|3|56.1503|
+|6|3|56.1503|
+|7|1|17.3941|
 
 
 
