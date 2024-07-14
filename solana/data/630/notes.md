@@ -226,5 +226,7 @@ arb.2024-07-14T165542 - 110 rows total.
 |6|3|56.1503|
 |7|1|17.3941|
 
-
-
+## Arb config update. Raydium only.
+```
+"min_base_token_balance": 1,
+"min_quote_token_balance": 150,
