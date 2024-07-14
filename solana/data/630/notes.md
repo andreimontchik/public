@@ -99,7 +99,7 @@ arb.2024-06-26T205023 - 143 rows total. Almost same as with the 0.5 min_base_tok
 ```
 
 ## Stats for Raydium only
-arb.2024-06-26T210702 - 161 rows total. Almost same as with the 0.5 and 0.2 min_base_token_balance. More than two times less that with min_base_token_balance = 0.01, but the total margin is better.
+arb.2024-06-26T210702 - 161 rows total. Almost same as with the 0.5 and 0.2 min_base_token_balance. Number of arbs is almost two times less that with min_base_token_balance = 0.01, but the total margin is better.
 
 | Min SOL | Qty Arbs | Quote Token Margin |
 |---------|--------|--------------------|
