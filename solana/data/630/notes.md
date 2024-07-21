@@ -302,7 +302,7 @@ arb.2024-07-21T201833 - 309 rows total.
 |6|6|71.6185|
 |7|1|17.3767|
 
-## Arb config update. Raydium only.
+## Arb config update, Raydium only.
 ```
 "slippage": 0.0025,
 ```
