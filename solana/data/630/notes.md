@@ -320,3 +320,23 @@ __Arbs longer than 8 blocks__
 |10.9949|12|
 |0.393255|11|
 
+## Arb algo update, Raydium only.
+```
+"min_base_token_balance": 1.0,
+"min_quote_token_balance": 150.0
+```
+```
+! no more slippage, the min arb is configured.
+"min_quote_margin": 0.1,
+```
+arb.2024-07-23T163311 - 5722 rows. All arbs are at the min quote margin, meaning the total arb amount is 5722 * 0.1 = $577.2
+__Arb Stats__
+| Min SOL | # Arbs | Margin |
+|---------|--------|--------|
+||1|0.1|
+ 
+__Arbs longer than 8 blocks__
+| Margin | # Blocks|
+|---------|--------|
+|0.1|5722|
+
