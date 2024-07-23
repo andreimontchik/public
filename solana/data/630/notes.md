@@ -329,7 +329,8 @@ __Arbs longer than 8 blocks__
 ! no more slippage, the min arb is configured.
 "min_quote_margin": 0.1,
 ```
-arb.2024-07-23T163311 - 5722 rows. All arbs are at the min quote margin, meaning the total arb amount is 5722 * 0.1 = $577.2.
+arb.2024-07-23T163311 - 5722 rows. All arbs are at the min quote margin, meaning the total arb amount is 5722 * 0.1 = $577.2
+
 __Arb Stats__
 | Min SOL | # Arbs | Margin |
 |---------|--------|--------|
