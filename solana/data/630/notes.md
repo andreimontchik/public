@@ -56,7 +56,7 @@ arb.2024-06-26T181920 -  225 rows total. Better results comparing to the prior r
 |2|81|442.893|
 |3|25|186.007|
 
-### Raydium only two most funded AMMs.
+### Raydium only two most funded AMMs
 arb.2024-06-26T193737 - 5 rows total.
 
 | Min SOL | # Arbs | Quote Token Margin |
@@ -167,7 +167,7 @@ arb.2024-07-14T152952 - 203 rows total, same as before increasing token funding.
 |6|5|70.8471|
 |7|1|17.3941|
 
-## Decreased the Arbmin_quote_margin and base_token_balance. Raydium only.
+## Decreased the Arbmin_quote_margin and base_token_balance. Raydium only
 ```
 "min_base_token_balance": 0.5,
 "min_quote_token_balance": 300,
@@ -184,7 +184,7 @@ arb.2024-07-14T154819 - 255 rows total.
 |6|6|71.6902|
 |7|1|17.3941|
 
-## Decreased the Arbmin_quote_margin and base_token_balance. Raydium only.
+## Decreased the Arbmin_quote_margin and base_token_balance. Raydium only
 ```
 "min_base_token_balance": 0.5,
 "min_quote_token_balance": 300,
@@ -220,7 +220,7 @@ arb.2024-07-14T165542 - 110 rows total.
 |6|3|56.1503|
 |7|1|17.3941|
 
-## Arb config update. Raydium only.
+## Arb config update. Raydium only
 ```
 "min_base_token_balance": 1,
 "min_quote_token_balance": 150,
@@ -237,7 +237,7 @@ arb.2024-07-14T172423 - 255 rows total.
 |6|6|71.6902|
 |7|1|17.3941|
 
-## Arb config update. Raydium only.
+## Arb config update. Raydium only
 ```
 "min_base_token_balance": 1,
 "min_quote_token_balance": 150,
@@ -271,7 +271,7 @@ arb.2024-07-14T181857 - 288 rows.
 |6|6|71.6902|
 |7|1|17.3941|
 
-## Arb config update. Raydium only.
+## Arb config update. Raydium only
 ```
 "slippage": 0.001,
 "min_quote_margin": 0.1,
@@ -287,7 +287,7 @@ arb.2024-07-21T200151 - 1331 rows.
 |6|25|164.562|
 |7|7|39.4855|
 
-## Arb config update. Raydium only.
+## Arb config update. Raydium only
 ```
 "slippage": 0.005,
 ```
@@ -302,7 +302,7 @@ arb.2024-07-21T201833 - 309 rows total.
 |6|6|71.6185|
 |7|1|17.3767|
 
-## Arb config update, Raydium only.
+## Arb config update, Raydium only
 ```
 "slippage": 0.0025,
 ```
@@ -320,7 +320,7 @@ __Arbs longer than 8 blocks__
 |10.9949|12|
 |0.393255|11|
 
-## Arb algo update, Raydium only.
+## Arb algo update, Raydium only
 ```
 "min_base_token_balance": 1.0,
 "min_quote_token_balance": 150.0
