@@ -326,18 +326,7 @@ __Arbs longer than 8 blocks__
 "min_quote_token_balance": 150.0
 ```
 ```
-! no more slippage, the min arb is configured.
+! no more slippage, the min qoute margin is used instead.
 "min_quote_margin": 0.1,
 ```
-arb.2024-07-23T163311 - 5722 rows. All arbs are at the min quote margin, meaning the total arb amount is 5722 * 0.1 = $577.2
-
-__Arb Stats__
-| Min SOL | # Arbs | Margin |
-|---------|--------|--------|
-||1|0.1|
- 
-__Arbs longer than 8 blocks__
-| Margin | # Blocks|
-|---------|--------|
-|0.1|5722|
-
+arb.2024-07-24T001015 - 5722 rows total. Total arbs: 674, arbs longer than 10 blocks: 120
