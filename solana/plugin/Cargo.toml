@@ -10,10 +10,10 @@ name = "async_plugin"
 [dependencies]
 log = "0.4.17"
 thiserror = "1.0.37"
-solana-program = { version = "=1.17.31" }
-solana-sdk = { version = "=1.17.31" }
-solana-logger = { version = "=1.17.31" }
-solana-geyser-plugin-interface = { version = "=1.17.31" }
+solana-program = { version = "=1.18.25" }
+solana-sdk = { version = "=1.18.25" }
+solana-logger = { version = "=1.18.25" }
+solana-geyser-plugin-interface = { version = "=1.18.25" }
 serde = "1.0.145"
 serde_json = "1.0.85"
 serde_derive = "1.0.145"

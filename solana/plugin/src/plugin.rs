@@ -1,8 +1,8 @@
 use {
     crate::{
         message_filter::MessageFilter,
-        processor::{cpi_processor::CpiProcessor, noop_processor::NoopProcessor, ProcessorManager},
-        read_from_file, to_pubkey, AsyncPluginError, Message,
+        processor::{noop_processor::NoopProcessor, ProcessorManager},
+        read_from_file, to_pubkey, AccountUpdateMessage, AsyncPluginError, Messages,
     },
     log::{debug, info},
     serde_derive::Deserialize,
@@ -24,10 +24,10 @@ impl From<AsyncPluginError> for GeyserPluginError {
     }
 }
 
+// TODO: separate accounts configuration from the plugin configuration
 #[derive(Error, Debug, Deserialize)]
 pub struct PluginConfig {
     pub processor: String,
-    pub owners: Vec<AccountConfig>,
     pub accounts: Vec<AccountConfig>,
 }
 
@@ -51,14 +51,14 @@ pub struct AccountConfig {
 
 #[derive(Debug)]
 pub struct AsyncPlugin {
-    sender: Sender<Message>,
+    sender: Sender<Messages>,
     processor_manager: ProcessorManager,
     message_filter: MessageFilter,
 }
 
 impl AsyncPlugin {
     fn new() -> AsyncPlugin {
-        let (sender, receiver) = mpsc::channel::<Message>();
+        let (sender, receiver) = mpsc::channel::<Messages>();
         AsyncPlugin {
             sender,
             processor_manager: ProcessorManager::new(receiver),
@@ -66,7 +66,7 @@ impl AsyncPlugin {
         }
     }
 
-    fn send_message(&self, msg: Message) -> crate::Result<()> {
+    fn send_message(&self, msg: Messages) -> crate::Result<()> {
         self.sender
             .send(msg)
             .map_err(|err| AsyncPluginError::FailedToSendMessage { err: err.to_string() })
@@ -80,7 +80,7 @@ impl AsyncPlugin {
             Pubkey::try_from(msg.pubkey)
         );
 
-        if !self.message_filter.is_registered(msg.owner, msg.pubkey) {
+        if !self.message_filter.is_registered(msg.pubkey) {
             return Ok(());
         }
 
@@ -88,12 +88,12 @@ impl AsyncPlugin {
             msg: format!("{:?}", msg),
         })?;
 
-        self.send_message(Message::AccountUpdate {
+        self.send_message(Messages::AccountUpdate(AccountUpdateMessage {
             slot,
             address: address.clone(),
             data: msg.data.to_vec(),
             txn_signature: msg.txn.map(|txn| *txn.signature()),
-        })
+        }))
     }
 }
 
@@ -106,32 +106,22 @@ impl GeyserPlugin for AsyncPlugin {
         true
     }
 
-    fn on_load(&mut self, config_file: &str) -> Result<()> {
+    fn on_load(&mut self, config_file: &str, _is_reload: bool) -> Result<()> {
         solana_logger::setup_with_default("info");
 
         info!("Loading the Plugin configuration from '{}'.", config_file);
         let config = PluginConfig::load(config_file);
 
-        self.processor_manager.start::<CpiProcessor>(config.processor);
-
-        // Register owners
-        for owner in config.owners {
-            let address = to_pubkey(&owner.address)?;
-            self.message_filter.add_owner(&address);
-            self.send_message(Message::OwnerInfo {
-                name: owner.name,
-                address,
-            })?;
-        }
+        self.processor_manager.start::<NoopProcessor>(config.processor);
 
         // Register accounts
         for account in config.accounts {
             let address = to_pubkey(&account.address)?;
             self.message_filter.add_account(&address);
-            self.send_message(Message::AccountInfo {
+            self.send_message(Messages::AccountInfo(crate::AccountInfoMessage {
                 name: account.name,
                 address,
-            })?;
+            }))?;
         }
 
         Ok(())
@@ -171,25 +161,26 @@ mod tests {
     #[test]
     fn test_plugin_config() {
         const PROCESSOR_CFG: &str = "Processor configuration";
-        const OWNER_NAME: &str = "Owner Name";
-        let owner_address = Pubkey::new_unique().to_string();
-        const ACCOUNT_NAME: &str = "Account Name";
-        let account_address = Pubkey::new_unique().to_string();
+        const ACCOUNT1_NAME: &str = "Account1 Name";
+        let account1_address = Pubkey::new_unique().to_string();
+        const ACCOUNT2_NAME: &str = "Account2 Name";
+        let account2_address = Pubkey::new_unique().to_string();
         let config_str = format!(
             r#"
         {{
             "libpath": "Dummy path",
             "processor":"{}",
-            "owners": [{{
+            "accounts": [
+            {{
                 "name": "{}",
                 "address": "{}"
-            }}],
-            "accounts": [{{
+            }},
+            {{
                 "name": "{}",
                 "address": "{}"
             }}]
-    }}"#,
-            PROCESSOR_CFG, OWNER_NAME, owner_address, ACCOUNT_NAME, account_address
+        }}"#,
+            PROCESSOR_CFG, ACCOUNT1_NAME, account1_address, ACCOUNT2_NAME, account2_address
         );
 
         let file = NamedTempFile::new().unwrap();
@@ -198,11 +189,10 @@ mod tests {
 
         let config = PluginConfig::load(file_path.to_str().unwrap());
         assert_eq!(config.processor, PROCESSOR_CFG);
-        assert_eq!(config.owners.len(), 1);
-        assert_eq!(config.owners[0].name, OWNER_NAME);
-        assert_eq!(config.owners[0].address, owner_address);
-        assert_eq!(config.accounts.len(), 1);
-        assert_eq!(config.accounts[0].name, ACCOUNT_NAME);
-        assert_eq!(config.accounts[0].address, account_address);
+        assert_eq!(config.accounts.len(), 2);
+        assert_eq!(config.accounts[0].name, ACCOUNT1_NAME);
+        assert_eq!(config.accounts[0].address, account1_address);
+        assert_eq!(config.accounts[1].name, ACCOUNT2_NAME);
+        assert_eq!(config.accounts[1].address, account2_address);
     }
 }

@@ -10,6 +10,7 @@ use {
 
 type AddressType = [u8; 32];
 
+// TODO: replace with Anyhow errors
 #[derive(Error, Debug)]
 pub enum AsyncPluginError {
     #[error("({msg})")]
@@ -22,29 +23,51 @@ pub enum AsyncPluginError {
     FailedToSendMessage { err: String },
 }
 
+// TODO: replace with Anyhow Result
 pub type Result<T> = std::result::Result<T, AsyncPluginError>;
 
-#[derive(Debug, PartialEq)]
-pub enum Message {
-    OwnerInfo {
-        name: String,
-        address: Pubkey,
-    },
-    AccountInfo {
-        name: String,
-        address: Pubkey,
-    },
-    AccountUpdate {
-        slot: Slot,
-        address: Pubkey,
-        data: Vec<u8>,
-        txn_signature: Option<Signature>,
-    },
+pub trait Message {
+    fn to_string(&self) -> String;
 }
 
-impl fmt::Display for Message {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self)
+#[derive(Debug)]
+pub struct AccountInfoMessage {
+    name: String,
+    address: Pubkey,
+}
+
+impl Message for AccountInfoMessage {
+    fn to_string(&self) -> String {
+        format!("Account Name: {}, Address: {}", self.name, self.address)
+    }
+}
+
+#[derive(Debug)]
+pub struct AccountUpdateMessage {
+    slot: Slot,
+    address: Pubkey,
+    data: Vec<u8>,
+    txn_signature: Option<Signature>,
+}
+
+impl Message for AccountUpdateMessage {
+    fn to_string(&self) -> String {
+        format!(
+            "Slot: {}, Address: {}, Data: {:?}, Transaction Signature: {:?}",
+            self.slot, self.address, self.data, self.txn_signature
+        )
+    }
+}
+
+#[derive(Debug)]
+pub enum Messages {
+    AccountInfo(AccountInfoMessage),
+    AccountUpdate(AccountUpdateMessage),
+}
+
+impl fmt::Display for Messages {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.to_string())
     }
 }
 
@@ -85,4 +108,6 @@ mod tests {
             assert_eq!(src_pk, res_pk);
         }
     }
+
+    // TODO: add testcases for Messages
 }

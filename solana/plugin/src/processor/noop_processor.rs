@@ -1,6 +1,6 @@
 use {
-    super::{Processor, ProcessorError, Result},
-    crate::Message,
+    super::{Processor, Result},
+    crate::{AccountInfoMessage, AccountUpdateMessage},
     log::info,
 };
 
@@ -18,30 +18,13 @@ impl Processor for NoopProcessor {
         NoopProcessor {}
     }
 
-    fn add_owner(&mut self, msg: &Message) -> Result<()> {
-        if let Message::OwnerInfo { .. } = msg {
-            info!("Processing the OwnerInfo message ({}).", msg);
-            Ok(())
-        } else {
-            Err(ProcessorError::InvalidMessageType { msg: msg.to_string() })
-        }
+    fn add_account(&mut self, msg: &AccountInfoMessage) -> Result<()> {
+        info!("Adding ({:?}).", msg);
+        Ok(())
     }
 
-    fn add_account(&mut self, msg: &Message) -> Result<()> {
-        if let Message::AccountInfo { .. } = msg {
-            info!("Processing the AccountInfo message ({}).", msg);
-            Ok(())
-        } else {
-            Err(ProcessorError::InvalidMessageType { msg: msg.to_string() })
-        }
-    }
-
-    fn update_account(&mut self, msg: &Message) -> Result<()> {
-        if let Message::AccountUpdate { .. } = msg {
-            info!("Processing the AccountUpdate message ({}).", msg);
-            Ok(())
-        } else {
-            Err(ProcessorError::InvalidMessageType { msg: msg.to_string() })
-        }
+    fn update_account(&mut self, msg: &AccountUpdateMessage) -> Result<()> {
+        info!("Updating ({:?}).", msg);
+        Ok(())
     }
 }

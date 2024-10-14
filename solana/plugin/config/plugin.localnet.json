@@ -1,12 +1,6 @@
 {
     "libpath": "/home/andrei/work/src/public/solana/plugin/target/debug/libasync_plugin.so",
     "processor": "",
-    "owners": [
-        {
-            "name": "Vote Program",
-            "address": "Vote111111111111111111111111111111111111111"
-        }
-    ],
     "accounts": [
         {
             "name": "System Clock",

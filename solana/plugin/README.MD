@@ -1,7 +1,7 @@
 # AsyncPlugin
-Reference Implementation of the Solana Validators's [Geyser Plugin](https://github.com/anza-xyz/agave/tree/master/geyser-plugin-interface) for asyncronous processing.
+Reference Implementation of the Solana Validators's [Geyser Plugin](https://github.com/anza-xyz/agave/tree/master/geyser-plugin-interface) for asyncronous processing of account updates and transactions.
 
-The Validator's multithreaded callback methods are sending messages to a channel that is being drained by a single [Procesor](src/processor.rs) in it's dedicated thread. This approach makes message processing thread safe and also decouples it from Validator. That allows simplifies the Processor testing and allows to reuse Processors in other applications.
+The Validator's callback methods are concurrently sending messages to a channel that is being drained by a single [Procesor](src/processor.rs) in it's own thread. This approach makes message processing thread safe and also decouples it from Validator, which in turn simplifies the Processor's testing and reusability.
 
 ### Build and Run on Localnet
 1. [Set up the Solana dev environment](https://solana.com/developers/guides/getstarted/setup-local-development)

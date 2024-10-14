@@ -1,8 +1,7 @@
-pub mod cpi_processor;
 pub mod noop_processor;
 
 use {
-    crate::Message,
+    crate::{AccountInfoMessage, AccountUpdateMessage, Messages},
     log::{error, info},
     solana_sdk::pubkey::Pubkey,
     std::{
@@ -16,6 +15,7 @@ use {
     thiserror::Error,
 };
 
+// TODO: replace with Anyhow Errors
 #[allow(warnings)]
 #[derive(Error, Debug)]
 pub enum ProcessorError {
@@ -25,6 +25,7 @@ pub enum ProcessorError {
     UnrecognizedAccount { address: Pubkey },
 }
 
+// TODO: replace with Anyhow Result
 pub type Result<T> = std::result::Result<T, ProcessorError>;
 
 pub trait Processor {
@@ -32,28 +33,26 @@ pub trait Processor {
     where
         Self: Sized;
 
-    fn add_owner(&mut self, msg: &Message) -> Result<()>;
-    fn add_account(&mut self, msg: &Message) -> Result<()>;
-    fn update_account(&mut self, msg: &Message) -> Result<()>;
+    fn add_account(&mut self, msg: &AccountInfoMessage) -> Result<()>;
+    fn update_account(&mut self, msg: &AccountUpdateMessage) -> Result<()>;
 
-    fn process(&mut self, msg: &Message) -> Result<()> {
-        match msg {
-            Message::OwnerInfo { .. } => self.add_owner(msg),
-            Message::AccountInfo { .. } => self.add_account(msg),
-            Message::AccountUpdate { .. } => self.update_account(msg),
+    fn process(&mut self, msgs: &Messages) -> Result<()> {
+        match msgs {
+            Messages::AccountInfo(msg) => self.add_account(msg),
+            Messages::AccountUpdate(msg) => self.update_account(msg),
         }
     }
 }
 
 #[derive(Debug)]
 pub struct ProcessorManager {
-    receiver: Arc<Mutex<Receiver<Message>>>,
+    receiver: Arc<Mutex<Receiver<Messages>>>,
     receiver_thread_handle: Option<thread::JoinHandle<()>>,
     should_run: Arc<AtomicBool>,
 }
 
 impl ProcessorManager {
-    pub fn new(rcv: Receiver<Message>) -> ProcessorManager {
+    pub fn new(rcv: Receiver<Messages>) -> ProcessorManager {
         ProcessorManager {
             receiver: Arc::new(Mutex::new(rcv)),
             receiver_thread_handle: None,
@@ -134,16 +133,11 @@ mod tests {
             }
         }
 
-        fn add_owner(&mut self, _msg: &Message) -> Result<()> {
-            self.add_owner_called = true;
-            Ok(())
-        }
-
-        fn add_account(&mut self, _msg: &Message) -> Result<()> {
+        fn add_account(&mut self, _msg: &AccountInfoMessage) -> Result<()> {
             self.add_account_called = true;
             Ok(())
         }
-        fn update_account(&mut self, _msg: &Message) -> Result<()> {
+        fn update_account(&mut self, _msg: &AccountUpdateMessage) -> Result<()> {
             self.process_account_udpate_called = true;
             Ok(())
         }
@@ -159,17 +153,12 @@ mod tests {
             Self {}
         }
 
-        fn add_owner(&mut self, _msg: &Message) -> Result<()> {
+        fn add_account(&mut self, _msg: &AccountInfoMessage) -> Result<()> {
             Err(ProcessorError::UnrecognizedAccount {
                 address: Pubkey::new_unique(),
             })
         }
-        fn add_account(&mut self, _msg: &Message) -> Result<()> {
-            Err(ProcessorError::UnrecognizedAccount {
-                address: Pubkey::new_unique(),
-            })
-        }
-        fn update_account(&mut self, _msg: &Message) -> Result<()> {
+        fn update_account(&mut self, _msg: &AccountUpdateMessage) -> Result<()> {
             Err(ProcessorError::UnrecognizedAccount {
                 address: Pubkey::new_unique(),
             })
@@ -183,21 +172,10 @@ mod tests {
         assert!(!processor.add_account_called);
         assert!(!processor.process_account_udpate_called);
 
-        // Add owner
-        assert!(processor
-            .add_owner(&Message::OwnerInfo {
-                name: "Dummy owner".to_string(),
-                address: Pubkey::new_unique()
-            })
-            .is_ok());
-        assert!(processor.add_owner_called);
-        assert!(!processor.add_account_called);
-        assert!(!processor.process_account_udpate_called);
-
         // Add account
         processor.add_owner_called = false;
         assert!(processor
-            .add_account(&Message::AccountInfo {
+            .add_account(&AccountInfoMessage {
                 name: "Dummy account".to_string(),
                 address: Pubkey::new_unique()
             })
@@ -209,7 +187,7 @@ mod tests {
         // Process account update
         processor.add_account_called = false;
         assert!(processor
-            .update_account(&Message::AccountUpdate {
+            .update_account(&AccountUpdateMessage {
                 slot: 1,
                 address: Pubkey::new_unique(),
                 data: Vec::<u8>::new(),
@@ -223,10 +201,10 @@ mod tests {
 
     #[test]
     fn test_failed_add_owner() {
-        let msg = &&Message::AccountInfo {
+        let msg = &&Messages::AccountInfo(AccountInfoMessage {
             name: "Dummy owner".to_string(),
             address: Pubkey::new_unique(),
-        };
+        });
 
         let mut processor = MockedFaultyProcessor {};
         match processor.process(msg) {
@@ -240,10 +218,10 @@ mod tests {
 
     #[test]
     fn test_failed_add_account() {
-        let msg = &&Message::AccountInfo {
+        let msg = &&Messages::AccountInfo(AccountInfoMessage {
             name: "Dummy account".to_string(),
             address: Pubkey::new_unique(),
-        };
+        });
 
         let mut processor = MockedFaultyProcessor {};
         match processor.process(msg) {
@@ -258,12 +236,12 @@ mod tests {
     #[test]
     fn test_failed_account_update() {
         let address = Pubkey::new_unique();
-        let msg = Message::AccountUpdate {
+        let msg = Messages::AccountUpdate(AccountUpdateMessage {
             slot: 1,
             address,
             data: Vec::<u8>::new(),
             txn_signature: Some(Signature::new_unique()),
-        };
+        });
 
         let mut processor = MockedFaultyProcessor {};
         match processor.process(&msg) {
