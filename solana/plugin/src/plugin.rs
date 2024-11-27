@@ -4,12 +4,12 @@ use {
         processor::{noop_processor::NoopProcessor, ProcessorManager},
         read_from_file, to_pubkey, AccountUpdateMessage, AsyncPluginError, Messages,
     },
+    agave_geyser_plugin_interface::geyser_plugin_interface::{
+        GeyserPlugin, GeyserPluginError, ReplicaAccountInfoV3, ReplicaAccountInfoVersions, Result,
+    },
     log::{debug, info},
     serde_derive::Deserialize,
     serde_json,
-    solana_geyser_plugin_interface::geyser_plugin_interface::{
-        GeyserPlugin, GeyserPluginError, ReplicaAccountInfoV3, ReplicaAccountInfoVersions, Result,
-    },
     solana_sdk::{clock::Slot, pubkey::Pubkey},
     std::{
         fmt,

@@ -8,15 +8,15 @@ crate-type = ["cdylib", "lib"]
 name = "async_plugin"
 
 [dependencies]
-log = "0.4.17"
-thiserror = "1.0.37"
-solana-program = { version = "=1.18.25" }
-solana-sdk = { version = "=1.18.25" }
-solana-logger = { version = "=1.18.25" }
-solana-geyser-plugin-interface = { version = "=1.18.25" }
-serde = "1.0.145"
-serde_json = "1.0.85"
-serde_derive = "1.0.145"
+log = "0.4.22"
+thiserror = "2.0.3"
+solana-program = { version = "=2.0.17" }
+solana-sdk = { version = "=2.0.17" }
+solana-logger = { version = "=2.0.17" }
+agave-geyser-plugin-interface = { version = "=2.0.17" }
+serde = "1.0.215"
+serde_json = "1.0.133"
+serde_derive = "1.0.215"
 
 [dev-dependencies]
-tempfile = "3"
+tempfile = "3.14"

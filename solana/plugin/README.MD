@@ -4,7 +4,7 @@ Reference Implementation of the Solana Validators's [Geyser Plugin](https://gith
 The Validator's callback methods are concurrently sending messages to a channel that is being drained by a single [Procesor](src/processor.rs) in it's own thread. This approach makes message processing thread safe and also decouples it from Validator, which in turn simplifies the Processor's testing and reusability.
 
 ### Build and Run on Localnet
-1. [Set up the Solana dev environment](https://solana.com/developers/guides/getstarted/setup-local-development)
+1. [Set up the Solana dev environment](https://anza.xyz/developers/guides/getstarted/setup-local-development)
 1. Obtain source code:
    1. `mkdir -p ~/work/src/`
    1. `cd ~/work/src`
