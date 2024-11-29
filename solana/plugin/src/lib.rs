@@ -3,28 +3,12 @@ mod plugin;
 mod processor;
 
 use {
+    anyhow::Result,
     solana_sdk::{clock::Slot, pubkey::Pubkey, signature::Signature},
     std::{fmt, fs::File, io::Read, str::FromStr},
-    thiserror::Error,
 };
 
 type AddressType = [u8; 32];
-
-// TODO: replace with Anyhow errors
-#[derive(Error, Debug)]
-pub enum AsyncPluginError {
-    #[error("({msg})")]
-    InvalidConfiguration { msg: String },
-    #[error("({msg})")]
-    InvalidPubKey { msg: String },
-    #[error("({code})")]
-    InvalidAccountType { code: String },
-    #[error("{err}")]
-    FailedToSendMessage { err: String },
-}
-
-// TODO: replace with Anyhow Result
-pub type Result<T> = std::result::Result<T, AsyncPluginError>;
 
 pub trait Message {
     fn to_string(&self) -> String;
@@ -80,9 +64,7 @@ pub fn read_from_file(file_name: &str) -> String {
 }
 
 pub fn to_pubkey(pubkey_str: &str) -> Result<Pubkey> {
-    Pubkey::from_str(pubkey_str).map_err(|_| AsyncPluginError::InvalidPubKey {
-        msg: pubkey_str.to_string(),
-    })
+    Ok(Pubkey::from_str(pubkey_str)?)
 }
 
 #[cfg(test)]

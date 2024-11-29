@@ -2,11 +2,13 @@ use {
     crate::{
         message_filter::MessageFilter,
         processor::{noop_processor::NoopProcessor, ProcessorManager},
-        read_from_file, to_pubkey, AccountUpdateMessage, AsyncPluginError, Messages,
+        read_from_file, to_pubkey, AccountUpdateMessage, Messages,
     },
     agave_geyser_plugin_interface::geyser_plugin_interface::{
-        GeyserPlugin, GeyserPluginError, ReplicaAccountInfoV3, ReplicaAccountInfoVersions, Result,
+        GeyserPlugin, GeyserPluginError, ReplicaAccountInfoV3, ReplicaAccountInfoVersions,
+        Result as GeyserPluginResult,
     },
+    anyhow::Result,
     log::{debug, info},
     serde_derive::Deserialize,
     serde_json,
@@ -15,17 +17,10 @@ use {
         fmt,
         sync::mpsc::{self, Sender},
     },
-    thiserror::Error,
 };
 
-impl From<AsyncPluginError> for GeyserPluginError {
-    fn from(err: AsyncPluginError) -> Self {
-        GeyserPluginError::Custom(Box::new(err))
-    }
-}
-
 // TODO: separate accounts configuration from the plugin configuration
-#[derive(Error, Debug, Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct PluginConfig {
     pub processor: String,
     pub accounts: Vec<AccountConfig>,
@@ -66,13 +61,11 @@ impl AsyncPlugin {
         }
     }
 
-    fn send_message(&self, msg: Messages) -> crate::Result<()> {
-        self.sender
-            .send(msg)
-            .map_err(|err| AsyncPluginError::FailedToSendMessage { err: err.to_string() })
+    fn send_message(&self, msg: Messages) -> Result<()> {
+        Ok(self.sender.send(msg)?)
     }
 
-    fn handle_account_update(&self, slot: Slot, msg: &ReplicaAccountInfoV3) -> crate::Result<()> {
+    fn handle_account_update(&self, slot: Slot, msg: &ReplicaAccountInfoV3) -> Result<()> {
         debug!(
             "Handling account update. Slot: {}, Owner: {:?}, Address: {:?}",
             slot,
@@ -84,9 +77,7 @@ impl AsyncPlugin {
             return Ok(());
         }
 
-        let address = Pubkey::try_from(msg.pubkey).map_err(|_| AsyncPluginError::InvalidPubKey {
-            msg: format!("{:?}", msg),
-        })?;
+        let address = Pubkey::try_from(msg.pubkey)?;
 
         self.send_message(Messages::AccountUpdate(AccountUpdateMessage {
             slot,
@@ -106,7 +97,7 @@ impl GeyserPlugin for AsyncPlugin {
         true
     }
 
-    fn on_load(&mut self, config_file: &str, _is_reload: bool) -> Result<()> {
+    fn on_load(&mut self, config_file: &str, _is_reload: bool) -> GeyserPluginResult<()> {
         solana_logger::setup_with_default("info");
 
         info!("Loading the Plugin configuration from '{}'.", config_file);
@@ -116,12 +107,15 @@ impl GeyserPlugin for AsyncPlugin {
 
         // Register accounts
         for account in config.accounts {
-            let address = to_pubkey(&account.address)?;
+            let address =
+                to_pubkey(&account.address).map_err(|error| GeyserPluginError::Custom(error.into()))?;
+
             self.message_filter.add_account(&address);
             self.send_message(Messages::AccountInfo(crate::AccountInfoMessage {
                 name: account.name,
                 address,
-            }))?;
+            }))
+            .map_err(|error| GeyserPluginError::Custom(error.into()))?;
         }
 
         Ok(())
@@ -136,11 +130,13 @@ impl GeyserPlugin for AsyncPlugin {
         msg_wrapper: ReplicaAccountInfoVersions,
         slot: Slot,
         _is_startup: bool,
-    ) -> Result<()> {
+    ) -> GeyserPluginResult<()> {
         match msg_wrapper {
             ReplicaAccountInfoVersions::V0_0_1(_) => Ok(()), // Ignore
             ReplicaAccountInfoVersions::V0_0_2(_) => Ok(()), // Ignore
-            ReplicaAccountInfoVersions::V0_0_3(msg) => Ok(self.handle_account_update(slot, msg)?),
+            ReplicaAccountInfoVersions::V0_0_3(msg) => self
+                .handle_account_update(slot, msg)
+                .map_err(|error| GeyserPluginError::Custom(error.into())),
         }
     }
 }

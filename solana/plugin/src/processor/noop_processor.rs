@@ -1,6 +1,7 @@
 use {
-    super::{Processor, Result},
+    super::Processor,
     crate::{AccountInfoMessage, AccountUpdateMessage},
+    anyhow::Result,
     log::info,
 };
 

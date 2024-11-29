@@ -2,8 +2,8 @@ pub mod noop_processor;
 
 use {
     crate::{AccountInfoMessage, AccountUpdateMessage, Messages},
+    anyhow::Result,
     log::{error, info},
-    solana_sdk::pubkey::Pubkey,
     std::{
         sync::{
             atomic::{AtomicBool, Ordering},
@@ -12,21 +12,7 @@ use {
         },
         thread, time,
     },
-    thiserror::Error,
 };
-
-// TODO: replace with Anyhow Errors
-#[allow(warnings)]
-#[derive(Error, Debug)]
-pub enum ProcessorError {
-    #[error("({msg})")]
-    InvalidMessageType { msg: String },
-    #[error("{}", Pubkey::from(*address).to_string())]
-    UnrecognizedAccount { address: Pubkey },
-}
-
-// TODO: replace with Anyhow Result
-pub type Result<T> = std::result::Result<T, ProcessorError>;
 
 pub trait Processor {
     fn new(config_file_name: &str) -> Self
@@ -113,6 +99,7 @@ impl ProcessorManager {
 mod tests {
     use {
         super::*,
+        anyhow::bail,
         solana_sdk::{pubkey::Pubkey, signature::Signature},
     };
     struct MockedProcessor {
@@ -154,14 +141,10 @@ mod tests {
         }
 
         fn add_account(&mut self, _msg: &AccountInfoMessage) -> Result<()> {
-            Err(ProcessorError::UnrecognizedAccount {
-                address: Pubkey::new_unique(),
-            })
+            bail!("Unrecognised account: ({})!", Pubkey::new_unique())
         }
         fn update_account(&mut self, _msg: &AccountUpdateMessage) -> Result<()> {
-            Err(ProcessorError::UnrecognizedAccount {
-                address: Pubkey::new_unique(),
-            })
+            bail!("Unrecognised account: ({})!", Pubkey::new_unique())
         }
     }
 
@@ -209,11 +192,8 @@ mod tests {
         let mut processor = MockedFaultyProcessor {};
         match processor.process(msg) {
             Ok(_) => panic!("Unexpected processing result!"),
-            Err(err) => match err {
-                ProcessorError::UnrecognizedAccount { address: _ } => (), // Expected
-                _ => panic!("Unexpected error {}!", err),
-            },
-        }
+            Err(_) => (),
+        };
     }
 
     #[test]
@@ -226,11 +206,8 @@ mod tests {
         let mut processor = MockedFaultyProcessor {};
         match processor.process(msg) {
             Ok(_) => panic!("Unexpected processing result!"),
-            Err(err) => match err {
-                ProcessorError::UnrecognizedAccount { address: _ } => (), // Expected
-                _ => panic!("Unexpected error {}!", err),
-            },
-        }
+            Err(_) => (),
+        };
     }
 
     #[test]
@@ -246,10 +223,7 @@ mod tests {
         let mut processor = MockedFaultyProcessor {};
         match processor.process(&msg) {
             Ok(_) => panic!("Unexpected processing result!"),
-            Err(err) => match err {
-                ProcessorError::UnrecognizedAccount { address: _ } => (), // Expected
-                _ => panic!("Unexpected error {}!", err),
-            },
+            Err(_) => (),
         }
     }
 }

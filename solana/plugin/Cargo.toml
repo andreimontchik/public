@@ -9,7 +9,7 @@ name = "async_plugin"
 
 [dependencies]
 log = "0.4.22"
-thiserror = "2.0.3"
+anyhow = { version = "=1.0.93" }
 solana-program = { version = "=2.0.17" }
 solana-sdk = { version = "=2.0.17" }
 solana-logger = { version = "=2.0.17" }
