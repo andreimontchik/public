@@ -9,7 +9,6 @@ edition = "2021"
 common = {path = "../common"}
 solana-program = { workspace = true }
 borsh = { workspace = true }
-borsh-derive = { workspace = true }
 
 [lib]
 crate-type = ["cdylib", "lib"]
